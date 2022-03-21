@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+name: longvinter-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      longvinter.service: longvinter-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        longvinter.service: longvinter-server
+    spec:
+      containers:
+        - env:
+            - name: CFG_ADMIN_STEAM_ID
+            - name: CFG_COMMUNITY_WEBSITE
+              value: www.longvinter.com
+            - name: CFG_ENABLE_PVP
+              value: "true"
+            - name: CFG_GAME_PORT
+              value: "7777"
+            - name: CFG_MAX_PLAYERS
+              value: "32"
+            - name: CFG_PASSWORD
+            - name: CFG_QUERY_PORT
+              value: "27016"
+            - name: CFG_SERVER_MOTD
+              value: Welcome to Longvinter Island!
+            - name: CFG_SERVER_NAME
+              value: Unnamed Island
+          image: longvinter-linux-server
+          name: longvinter-server
+          ports:
+            - containerPort: 7777
+            - containerPort: 7777
+              protocol: UDP
+            - containerPort: 27016
+            - containerPort: 27016
+              protocol: UDP
+          resources: {}
+          volumeMounts:
+            - mountPath: /data
+              name: longvinter-data
+      restartPolicy: Always
+      volumes:
+        - name: longvinter-data
+          persistentVolumeClaim:
+            claimName: longvinter-data
+status: {}
